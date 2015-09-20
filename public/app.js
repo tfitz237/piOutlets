@@ -11,7 +11,9 @@
         var socket = io();
         $scope.lights = [];
         $scope.lightToggle = lightToggle;
-        socket.on('connect',function(data) {
+        $scope.motionToggle = motionToggle;
+	$scope.motion = true;
+	socket.on('connect',function(data) {
            
             
             
@@ -28,7 +30,9 @@
             
             
         }
-        
+	function motionToggle() {
+		socket.emit('motion set', $scope.motion);
+	}        
         
     }
     
