@@ -7,7 +7,8 @@ var app = express();
 var server = require('http').Server(app);
 var io = require('socket.io')(server);
 console.log('Setting up motion sensor...');
-
+var motion = new Date();
+var motionOn = true;
 gpio.setMode(gpio.MODE_BCM);
 gpio.setup(19,gpio.DIR_IN,gpio.EDGE_BOTH);
 console.log('Motion sensor set up.');
@@ -17,14 +18,13 @@ console.log('Server started. View at http://'+server.address().address);
 console.log('Awaiting input:');
 // motion sensor
 setInterval(checkSensor,60000);
-var motion;
 });
 gpio.on('change',function(channel,value) {
-	if(channel == 19 && motion == true) {
+	if(channel == 19) {
 		
 		console.log('Motion detected.');
 		motion = new Date();
-		if(lights[1].status == false && value == true && (new Date().getHours() > 17 || new Date().getHours() < 3) ) {
+		if(lights[1].status == false && value == true && motionOn == true && (new Date().getHours() > 15 || new Date().getHours() < 3) ) {
 			// Turn on light only if the light is off, the motion sensor was tripped, and it's past 5pm
 			
 			sendCode(1);				
@@ -33,10 +33,9 @@ gpio.on('change',function(channel,value) {
 });
 
 function checkSensor() {
-	if(motion == true) {
 	console.log('Any motion in the past 5 minutes?');
 	gpio.read(19,function(err,value) {
-		if(value == false && lights[1].status == true && (new Date().getTime() - motion.getTime() > 300000)) { 
+		if(value == false && lights[1].status == true && (new Date().getTime() - motion.getTime() > 300000) && motionOn == true) { 
 			sendCode(1);
 			console.log('No motion.');	
 		}
@@ -44,8 +43,7 @@ function checkSensor() {
 			console.log('Yes. Checking again in a minute.');
 		}
 	});
-	}
-
+	
 
 }
 
@@ -65,7 +63,7 @@ var options = {
 var lights = [
  { 'id': 0, 'name': 'Bedroom Lights', 'status': true, 'code': [333116,333107] },   
  { 'id': 1, 'name': 'Living Room Lamp', 'status': false, 'code': [333260,333251] },  
- { 'id': 2, 'name': 'Living Room Fan', 'status': false, 'code': [333580,333571] },    
+ { 'id': 2, 'name': 'Audio Mixer', 'status': false, 'code': [333580,333571] },    
  { 'id': 3, 'name': 'Office Lamp', 'status': false, 'code': [341260,341251] }     
 ];
 var motion = true;
@@ -78,9 +76,11 @@ io.on('connection', connection);
 function connection(socket) {
     console.log(socket.id);
     io.emit('light status', lights);
-    
+	io.emit('motion set', motionOn);    
 
-	socket.on('motion set', function(n) { motion = n; console.log('Motion sensor set to ' + motion);});    
+	socket.on('motion set', function(n) { motionOn = n; console.log('Motion sensor set to ' + motionOn); io.emit('motion set', motionOn);});    
+
+	socket.on('light status', function(n) { io.emit('light status', lights); io.emit('motion set', motionOn);});
 
     socket.on('light change', function(n){
         
