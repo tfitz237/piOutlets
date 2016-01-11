@@ -9,7 +9,7 @@ var options = {
     prompt: 'Password, yo? ',
     spawnOptions: {/* other options for spawn */}
 };
-var outlet;
+var outlet = [];
 server.listen(80, function (e) {
     console.log('Server started. Awaiting Input:');
     setInterval(checkSensor, 60000);
@@ -83,18 +83,19 @@ function connection(socket) {
 
 function sendCode(light) {
     var code;
+    if (outlet.lights[light].status) {
+        code = outlet.lights[light].code[0];
+        outlet.lights[light].status = false;
+        console.log('Turning the ' + outlet.lights[n].name + ' off');
+    }
+    else {
+        code = outlet.lights[light].code[1];
+        outlet.lights[light].status = true;
+        console.log('Turning the ' + outlet.lights[n].name + ' on');
+    }
     var child = sudo(['/var/www/rfoutlet/codesend', code.toString()], options);
     child.stdout.on('data', function (data) {
-        if (outlet.lights[light].status) {
-            code = outlet.lights[light].code[0];
-            outlet.lights[light].status = false;
-            console.log('Turning the ' + outlet.lights[n].name + ' off');
-        }
-        else {
-            code = outlet.lights[light].code[1];
-            outlet.lights[light].status = true;
-            console.log('Turning the ' + outlet.lights[n].name + ' on');
-        }
+
         io.emit('light status', outlet.lights);
     });
 }
