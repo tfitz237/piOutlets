@@ -70,7 +70,7 @@
         <div class="topbar"><H2>Light Toggle</H2></div>
         <div class="switchWrap">
         <div class="onoffswitch" ng-repeat="light in lights">
-            
+
         	<input type="checkbox" ng-model="light.status" class="onoffswitch-checkbox" id="{{light.id}}" ng-change="lightToggle(light.id)">
         	<label ng-bind="light.name" class="onoffswitch-label" for="{{light.id}}"></label>
         </div>
@@ -79,7 +79,8 @@
 		<input type="checkbox" ng-model="motion" class="onoffswitch-checkbox" id="motionOn" ng-change="motionToggle()">
 		<label class="onoffswitch-label" for="motionOn">Motion Sensor</label>
         </div>
+        <script src="annyang.min.js"></script>
         <script src="socketio.js"></script>
         <script src="angular.min.js"></script>
         <script src="app.js"></script>
-    </body> </html> 
+    </body> </html>
