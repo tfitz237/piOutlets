@@ -86,12 +86,12 @@ function sendCode(light) {
     if (outlet.lights[light].status) {
         code = outlet.lights[light].code[0];
         outlet.lights[light].status = false;
-        console.log('Turning the ' + outlet.lights[n].name + ' off');
+        console.log('Turning the ' + outlet.lights[light].name + ' off');
     }
     else {
         code = outlet.lights[light].code[1];
         outlet.lights[light].status = true;
-        console.log('Turning the ' + outlet.lights[n].name + ' on');
+        console.log('Turning the ' + outlet.lights[light].name + ' on');
     }
     var child = sudo(['/var/www/rfoutlet/codesend', code.toString()], options);
     child.stdout.on('data', function (data) {
@@ -115,4 +115,3 @@ function checkSensor() {
         });
     }
 }
-
