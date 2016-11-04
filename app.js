@@ -65,7 +65,7 @@ function init() {
             res.cookie('jwt', jwt.sign(user, 'supersecretcode'));
 
         }
-        res.redirect("lights")
+        res.redirect("/lights");
     });
     app.get('/lights', function(req, res) {
         if(req.cookies.jwt != undefined && jwt.verify(req.cookies.jwt, 'supersecretcode', {ignoreExpiration: true})) {
