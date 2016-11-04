@@ -1,4 +1,4 @@
-//var gpio = require('rpi-gpio');
+var gpio = require('rpi-gpio');
 var express = require('express');
 var cookieParser = require('cookie-parser');
 var bodyParser     =        require("body-parser");
@@ -10,7 +10,6 @@ var server = require('http').Server(app);
 var io = require('socket.io')(server);
 var sudo = require('sudo');
 var jwt = require('jsonwebtoken');
-var express_jwt = require('express-jwt');
 
 var options = {
     cachePassword: true,
@@ -20,29 +19,29 @@ var options = {
 var outlet = [];
 server.listen(80, function (e) {
     console.log('Server started. Awaiting Input:');
-   // setInterval(checkSensor, 60000);
+   setInterval(checkSensor, 60000);
 });
 
 init();
 
-// gpio.on('change', function (channel, value) {
-//     if (channel == 19) {
-//         console.log('Motion detected.');
-//         outlet.motion = new Date();
-//         if (outlet.lights[1].status == false && value == true)
-//             if(outlet.motionOn == true && (outlet.motion.getHours() > 15 || outlet.motion.getHours() < 3))
-//             // Turn on light only if the light is off, the motion sensor was tripped, and it's past 5pm
-//             sendCode(1);
-//
-//     }
-// });
+gpio.on('change', function (channel, value) {
+    if (channel == 19) {
+        console.log('Motion detected.');
+        outlet.motion = new Date();
+        if (outlet.lights[1].status == false && value == true)
+            if(outlet.motionOn == true && (outlet.motion.getHours() > 15 || outlet.motion.getHours() < 3))
+            // Turn on light only if the light is off, the motion sensor was tripped, and it's past 5pm
+            sendCode(1);
+
+    }
+});
 
 io.on('connection', connection);
 
 function init() {
 
-    //gpio.setMode(gpio.MODE_BCM);
-   // gpio.setup(19, gpio.DIR_IN, gpio.EDGE_BOTH);
+    gpio.setMode(gpio.MODE_BCM);
+    gpio.setup(19, gpio.DIR_IN, gpio.EDGE_BOTH);
     outlet.motion = new Date();
     outlet.motionOn = true;
 
@@ -62,7 +61,7 @@ function init() {
     app.post('/login', function (req, res) {
         console.log(req.body);
         var user = { name: req.body.username, pass: req.body.password};
-        if(user.name == "tfitz237" && user.pass == "tfitz123") {
+        if(user.name == "tfi    tz237" && user.pass == "tfitz123") {
             res.cookie('jwt', jwt.sign(user, 'supersecretcode'));
 
         }
