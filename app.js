@@ -69,7 +69,7 @@ function init() {
     });
     app.get('/lights', function(req, res) {
         if(req.cookies.jwt != undefined && jwt.verify(req.cookies.jwt, 'supersecretcode', {ignoreExpiration: true})) {
-            res.sendFile(__dirname + '/public/index.html');
+            res.sendFile(__dirname + '/index.html');
         }
     });
     app.post('/lights/:on/:lightName', function(req,res) {
