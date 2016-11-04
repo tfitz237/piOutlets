@@ -1,9 +1,17 @@
-var gpio = require('rpi-gpio');
+//var gpio = require('rpi-gpio');
 var express = require('express');
+var cookieParser = require('cookie-parser');
+var bodyParser     =        require("body-parser");
+
 var app = express();
+app.use(cookieParser());
+app.use(bodyParser());
 var server = require('http').Server(app);
 var io = require('socket.io')(server);
 var sudo = require('sudo');
+var jwt = require('jsonwebtoken');
+var express_jwt = require('express-jwt');
+
 var options = {
     cachePassword: true,
     prompt: 'Password, yo? ',
@@ -12,28 +20,29 @@ var options = {
 var outlet = [];
 server.listen(80, function (e) {
     console.log('Server started. Awaiting Input:');
-    setInterval(checkSensor, 60000);
+   // setInterval(checkSensor, 60000);
 });
 
 init();
 
-gpio.on('change', function (channel, value) {
-    if (channel == 19) {
-        console.log('Motion detected.');
-        outlet.motion = new Date();
-        if (outlet.lights[1].status == false && value == true)
-            if(outlet.motionOn == true && (outlet.motion.getHours() > 15 || outlet.motion.getHours() < 3))
-            // Turn on light only if the light is off, the motion sensor was tripped, and it's past 5pm
-            sendCode(1);
-
-    }
-});
+// gpio.on('change', function (channel, value) {
+//     if (channel == 19) {
+//         console.log('Motion detected.');
+//         outlet.motion = new Date();
+//         if (outlet.lights[1].status == false && value == true)
+//             if(outlet.motionOn == true && (outlet.motion.getHours() > 15 || outlet.motion.getHours() < 3))
+//             // Turn on light only if the light is off, the motion sensor was tripped, and it's past 5pm
+//             sendCode(1);
+//
+//     }
+// });
 
 io.on('connection', connection);
 
 function init() {
-    gpio.setMode(gpio.MODE_BCM);
-    gpio.setup(19, gpio.DIR_IN, gpio.EDGE_BOTH);
+
+    //gpio.setMode(gpio.MODE_BCM);
+   // gpio.setup(19, gpio.DIR_IN, gpio.EDGE_BOTH);
     outlet.motion = new Date();
     outlet.motionOn = true;
 
@@ -45,12 +54,34 @@ function init() {
     ];
     app.use(express.static('public'));
     app.get('/', function (req, res) {
-        res.sendFile(__dirname + '/public/outlet.html');
+        res.sendFile(__dirname + '/public/login.html');
     });
-    app.get('lights/:on/:lightName', function(req,res) {
-        var name = req.params.lightName;
-        var on = (req.params.on == "on");
-        findAndSend(name,on);
+    app.get('/login', function (req, res) {
+        res.sendFile(__dirname + '/public/login.html');
+    });
+    app.post('/login', function (req, res) {
+        console.log(req.body);
+        var user = { name: req.body.username, pass: req.body.password};
+        if(user.name == "tfitz237" && user.pass == "tfitz123") {
+            res.cookie('jwt', jwt.sign(user, 'supersecretcode'));
+
+        }
+        res.redirect("lights")
+    });
+    app.get('/lights', function(req, res) {
+        if(req.cookies.jwt != undefined && jwt.verify(req.cookies.jwt, 'supersecretcode', {ignoreExpiration: true})) {
+            res.sendFile(__dirname + '/public/index.html');
+        }
+    });
+    app.post('lights/:on/:lightName', function(req,res) {
+        if(jwt.verify(req.body.token, 'supersecretcode', {ignoreExpiration: true})) {
+            var name = req.params.lightName;
+            var on = (req.params.on == "on");
+            findAndSend(name, on);
+        }
+    });
+    app.get('/style.css', function(req,res) {
+        res.sendFile(__dirname + '/public/style.css');
     });
 }
 

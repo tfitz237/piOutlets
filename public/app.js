@@ -8,6 +8,10 @@
 
     function AppCtrl ($scope) {
         var socket = io.connect();
+        $scope.loggedIn = false;
+        if(localStorage["jwt"] != null) {
+
+        }
         $scope.lights = [];
         $scope.lightToggle = lightToggle;
         $scope.motionToggle = motionToggle;
