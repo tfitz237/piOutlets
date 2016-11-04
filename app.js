@@ -14,9 +14,8 @@ server.listen(80, function (e) {
     console.log('Server started. Awaiting Input:');
     setInterval(checkSensor, 60000);
 });
+
 init();
-gpio.setMode(gpio.MODE_BCM);
-gpio.setup(19, gpio.DIR_IN, gpio.EDGE_BOTH);
 
 gpio.on('change', function (channel, value) {
     if (channel == 19) {
@@ -33,18 +32,25 @@ gpio.on('change', function (channel, value) {
 io.on('connection', connection);
 
 function init() {
+    gpio.setMode(gpio.MODE_BCM);
+    gpio.setup(19, gpio.DIR_IN, gpio.EDGE_BOTH);
     outlet.motion = new Date();
     outlet.motionOn = true;
 
     outlet.lights = [
-        {'id': 0, 'name': 'Bedroom outlet.lights', 'status': false, 'code': [333116, 333107]},
-        {'id': 1, 'name': 'Living Room Lamp', 'status': false, 'code': [333260, 333251]},
+        {'id': 0, 'name': 'Bedroom', 'status': false, 'code': [333116, 333107]},
+        {'id': 1, 'name': 'Living Room', 'status': false, 'code': [333260, 333251]},
         {'id': 2, 'name': 'Audio Mixer', 'status': false, 'code': [333580, 333571]},
-        {'id': 3, 'name': 'Office Lamp', 'status': false, 'code': [341260, 341251]}
+        {'id': 3, 'name': 'Office', 'status': false, 'code': [341260, 341251]}
     ];
     app.use(express.static('public'));
     app.get('/', function (req, res) {
         res.sendFile(__dirname + '/public/outlet.html');
+    });
+    app.get('lights/:on/:lightName', function(req,res) {
+        var name = req.params.lightName;
+        var on = (req.params.on == "on");
+        findAndSend(name,on);
     });
 }
 
@@ -65,15 +71,7 @@ function connection(socket) {
     });
 
     socket.on('light change', function (n) {
-
-        if (outlet.lights[n].status) {
-
-            sendCode(n);
-        }
-        else {
-            console.log('Turning the ' + outlet.lights[n].name + ' on');
-            sendCode(n);
-        }
+        sendCode(n);
         io.emit('light status', outlet.lights);
     });
 
@@ -81,17 +79,28 @@ function connection(socket) {
     });
 }
 
-function sendCode(light) {
+function sendCode(light, on) {
     var code;
-    if (outlet.lights[light].status) {
-        code = outlet.lights[light].code[0];
-        outlet.lights[light].status = false;
-        console.log('Turning the ' + outlet.lights[light].name + ' off');
-    }
-    else {
-        code = outlet.lights[light].code[1];
-        outlet.lights[light].status = true;
-        console.log('Turning the ' + outlet.lights[light].name + ' on');
+    if(typeof on !== "undefined") {
+        if (!on) {
+            code = outlet.lights[light].code[1];
+            outlet.lights[light].status = true;
+            console.log('Turning the ' + outlet.lights[light].name + ' on');
+        } else {
+            code = outlet.lights[light].code[0];
+            outlet.lights[light].status = false;
+            console.log('Turning the ' + outlet.lights[light].name + ' off');
+        }
+    } else {
+        if (!outlet.lights[light].status) {
+            code = outlet.lights[light].code[1];
+            outlet.lights[light].status = true;
+            console.log('Turning the ' + outlet.lights[light].name + ' on');
+        } else if (outlet.lights[light].status) {
+            code = outlet.lights[light].code[0];
+            outlet.lights[light].status = false;
+            console.log('Turning the ' + outlet.lights[light].name + ' off');
+        }
     }
     var child = sudo(['/var/www/rfoutlet/codesend', code.toString()], options);
     child.stdout.on('data', function (data) {
@@ -106,7 +115,7 @@ function checkSensor() {
         gpio.read(19, function (err, value) {
             if (value == false && outlet.lights[1].status == true) {
                 if (new Date().getTime() - outlet.motion.getTime() > 300000) {
-                    sendCode(1);
+                    sendCode(1, false);
                     console.log('No motion.');
                 } else {
                     console.log('Yes. Checking again in a minute.');
@@ -114,4 +123,18 @@ function checkSensor() {
             }
         });
     }
+}
+
+function findAndSend(name, on) {
+    if(name == 'all') {
+        for(var i = 0; i < outlet.lights.length; i++) {
+            sendCode(outlet.lights[i], on);
+        }
+    }
+    for(var i = 0; i < outlet.lights.length; i++) {
+        if(outlet.lights[i].name == name.replace('_', ' ')) {
+            sendCode(i);
+        }
+    }
+
 }
