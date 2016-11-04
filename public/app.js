@@ -18,18 +18,7 @@
 	    $scope.motionOn = true;
 	    socket.on('connect',function() {
 		    socket.emit('light status');
-            if(annyang) {
-                var commands = {
-                        'turn on *light': speechToggle
-                };
 
-                annyang.addCommands(commands);
-
-                // Start listening. You can call this here, or attach this call to an event, button, etc.
-                annyang.start();
-
-
-            }
         });
         socket.on('light status', function (lights) {
             $scope.lights = lights;
