@@ -53,10 +53,10 @@ function init() {
     ];
     app.use(express.static('public'));
     app.get('/', function (req, res) {
-        res.sendFile(__dirname + '/public/login.html');
+        res.sendFile(__dirname + '/login.html');
     });
     app.get('/login', function (req, res) {
-        res.sendFile(__dirname + '/public/login.html');
+        res.sendFile(__dirname + '/login.html');
     });
     app.post('/login', function (req, res) {
         console.log(req.body);
@@ -79,9 +79,7 @@ function init() {
             findAndSend(name, on);
         }
     });
-    app.get('/style.css', function(req,res) {
-        res.sendFile(__dirname + '/public/style.css');
-    });
+
 }
 
 function connection(socket) {
@@ -162,7 +160,7 @@ function findAndSend(name, on) {
         }
     }
     for(var i = 0; i < outlet.lights.length; i++) {
-        if(outlet.lights[i].name == name.replace('_', ' ')) {
+        if(outlet.lights[i].name.toLowerCase() == name.toLowerCase()) {
             sendCode(i);
         }
     }
