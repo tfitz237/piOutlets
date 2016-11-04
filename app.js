@@ -72,7 +72,7 @@ function init() {
             res.sendFile(__dirname + '/public/index.html');
         }
     });
-    app.post('lights/:on/:lightName', function(req,res) {
+    app.post('/lights/:on/:lightName', function(req,res) {
         if(jwt.verify(req.body.token, 'supersecretcode', {ignoreExpiration: true})) {
             var name = req.params.lightName;
             var on = (req.params.on == "on");
