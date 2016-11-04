@@ -8,7 +8,7 @@
     <body ng-controller="AppCtrl">
         <div class="topbar"><H2>Light Toggle</H2></div>
         <div class="switchWrap">
-            <div class="onoffswitch" ng-repeat="light in lights" ng-if="loggedIn">
+            <div class="onoffswitch" ng-repeat="light in lights">
         	    <input type="checkbox" ng-model="light.status" class="onoffswitch-checkbox" id="{{light.id}}" ng-change="lightToggle(light.id)">
         	    <label ng-bind="light.name" class="onoffswitch-label" for="{{light.id}}"></label>
             </div>
