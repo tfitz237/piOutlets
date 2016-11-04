@@ -61,7 +61,7 @@ function init() {
     app.post('/login', function (req, res) {
         console.log(req.body);
         var user = { name: req.body.username, pass: req.body.password};
-        if(user.name == "tfi    tz237" && user.pass == "tfitz123") {
+        if(user.name == "tfitz237" && user.pass == "tfitz123") {
             res.cookie('jwt', jwt.sign(user, 'supersecretcode'));
 
         }
