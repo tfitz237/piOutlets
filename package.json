@@ -1,0 +1,30 @@
+{
+  "name": "pi-rfoutlet",
+  "version": "1.0.0",
+  "description": "rasp-pi controlled outlets",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tfitz237/pi-rfoutlet.git"
+  },
+  "keywords": [
+    "node",
+    "express",
+    "gpio",
+    "socketio"
+  ],
+  "author": "Tom Fitzpatrick",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/tfitz237/pi-rfoutlet/issues"
+  },
+  "homepage": "https://github.com/tfitz237/pi-rfoutlet#readme",
+  "dependencies": {
+    "body-parser": "^1.15.2",
+    "cookie-parser": "^1.4.3",
+    "express-session": "^1.14.2"
+  }
+}
