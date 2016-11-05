@@ -83,7 +83,7 @@ function init() {
         if(jwt.verify(req.body.token, 'supersecretcode', {ignoreExpiration: true})) {
             var name = req.params.lightName;
             var on = (req.params.on == "on");
-            findAndSend(name, on);
+            findAndSend(name.replace('the','').trim(), on);
 	    console.log("POST", name, on);
         }
     });
@@ -118,7 +118,7 @@ function connection(socket) {
 function sendCode(light, on) {
     var code;
     if(typeof on !== "undefined") {
-        if (!on) {
+        if (on) {
             code = outlet.lights[light].code[1];
             outlet.lights[light].status = true;
             console.log('Turning the ' + outlet.lights[light].name + ' on');
@@ -169,7 +169,8 @@ function findAndSend(name, on) {
     }
     for(var i = 0; i < outlet.lights.length; i++) {
         if(outlet.lights[i].name.toLowerCase() == name.toLowerCase()) {
-            sendCode(i);
+            sendCode(i,on);
+	    console.log('outlet found', outlet.lights[i]);
         }
     }
 
