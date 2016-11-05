@@ -82,8 +82,8 @@ function init() {
         if(jwt.verify(req.body.token, 'supersecretcode', {ignoreExpiration: true})) {
             var name = req.params.lightName;
             var on = (req.params.on == "on");
-            findAndSend(name, on);
-	    console.log("POST", name, on);
+            findAndSend(name.replace('the','').trim(), on);
+	    console.log("POST<'"+name+"'>", on);
         }
     });
 
