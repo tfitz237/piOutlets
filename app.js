@@ -79,11 +79,10 @@ function init() {
         }
     });
     app.post('/lights/:on/:lightName', function(req,res) {
-	console.log("trying to use google to turn on lights...");
         if(jwt.verify(req.body.token, 'supersecretcode', {ignoreExpiration: true})) {
             var name = req.params.lightName;
             var on = (req.params.on == "on");
-            findAndSend(name.replace('the','').trim(), on);
+            findAndSend(name, on);
 	    console.log("POST", name, on);
         }
     });
@@ -118,7 +117,7 @@ function connection(socket) {
 function sendCode(light, on) {
     var code;
     if(typeof on !== "undefined") {
-        if (on) {
+        if (!on) {
             code = outlet.lights[light].code[1];
             outlet.lights[light].status = true;
             console.log('Turning the ' + outlet.lights[light].name + ' on');
@@ -140,8 +139,13 @@ function sendCode(light, on) {
     }
     var child = sudo(['/var/www/rfoutlet/codesend', code.toString()], options);
     child.stdout.on('data', function (data) {
-
-        io.emit('light status', outlet.lights);
+        var child2 = sudo(['/var/www/rfoutlet/codesend', code.toString()], options);
+        child2.stdout.on('data', function (data) {
+            var child3 = sudo(['/var/www/rfoutlet/codesend', code.toString()], options);
+            child3.stdout.on('data', function (data) {
+                io.emit('light status', outlet.lights);
+            });
+        });
     });
 }
 
@@ -169,8 +173,8 @@ function findAndSend(name, on) {
     }
     for(var i = 0; i < outlet.lights.length; i++) {
         if(outlet.lights[i].name.toLowerCase() == name.toLowerCase()) {
-            sendCode(i,on);
-	    console.log('outlet found', outlet.lights[i]);
+            sendCode(i, on);
+            console.log(outlet.lights[i]);
         }
     }
 
