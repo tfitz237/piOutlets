@@ -6,6 +6,12 @@ var bodyParser     =        require("body-parser");
 var app = express();
 app.use(cookieParser());
 app.use(bodyParser());
+app.use(function(req, res, next) {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    next();
+});
+app.use(express.static('public'));
 var server = require('http').Server(app);
 var io = require('socket.io')(server);
 var sudo = require('sudo');
@@ -51,7 +57,7 @@ function init() {
         {'id': 2, 'name': 'Audio Mixer', 'status': false, 'code': [333580, 333571]},
         {'id': 3, 'name': 'Office', 'status': false, 'code': [341260, 341251]}
     ];
-    app.use(express.static('public'));
+
     app.get('/', function (req, res) {
         res.sendFile(__dirname + '/login.html');
     });
