@@ -80,9 +80,9 @@ function init() {
     });
     app.post('/lights/:on/:lightName', function(req,res) {
         if(jwt.verify(req.body.token, 'supersecretcode', {ignoreExpiration: true})) {
-            var name = req.params.lightName;
+            var name = req.params.lightName.replace('the','').trim();
             var on = (req.params.on == "on");
-            findAndSend(name.replace('the','').trim(), on);
+            findAndSend(name, on);
 	    console.log("POST<'"+name+"'>", on);
         }
     });
@@ -117,7 +117,7 @@ function connection(socket) {
 function sendCode(light, on) {
     var code;
     if(typeof on !== "undefined") {
-        if (!on) {
+        if (on) {
             code = outlet.lights[light].code[1];
             outlet.lights[light].status = true;
             console.log('Turning the ' + outlet.lights[light].name + ' on');
