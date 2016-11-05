@@ -73,10 +73,12 @@ function init() {
         }
     });
     app.post('/lights/:on/:lightName', function(req,res) {
+	console.log("trying to use google to turn on lights...");
         if(jwt.verify(req.body.token, 'supersecretcode', {ignoreExpiration: true})) {
             var name = req.params.lightName;
             var on = (req.params.on == "on");
             findAndSend(name, on);
+	    console.log("POST", name, on);
         }
     });
 
