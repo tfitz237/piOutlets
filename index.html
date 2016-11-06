@@ -3,10 +3,10 @@
     <head>
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="stylesheet" href="style.css" />
-        <title>Light Toggle</title>
+        <title>piOutlets</title>
     </head>
     <body ng-controller="AppCtrl">
-        <div class="topbar"><H2>Light Toggle</H2></div>
+        <div class="topbar"><H2>piOutlets</H2></div>
         <div class="switchWrap">
             <div class="onoffswitch" ng-repeat="light in lights">
         	    <input type="checkbox" ng-model="light.status" class="onoffswitch-checkbox" id="{{light.id}}" ng-change="lightToggle(light.id)">

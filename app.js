@@ -10,7 +10,7 @@ var bodyParser = require("body-parser");
 var app = express();
 var server = require('http').Server(app);
 var io = require('socket.io')(server);
-var outlet = [];
+
 app.use(cookieParser());
 app.use(bodyParser());
 app.use(function(req, res, next) {
@@ -19,6 +19,34 @@ app.use(function(req, res, next) {
     next();
 });
 app.use(express.static('public'));
+
+var outlet = [];
+outlet.lights = [
+    {
+        'id': 0,
+        'name': 'Bedroom',
+        'code': [333116, 333107],
+        'status': false
+    },
+    {
+        'id': 1,
+        'name': 'Living Room',
+        'code': [333260, 333251],
+        'status': false
+    },
+    {
+        'id': 2,
+        'name': 'Fan',
+        'code': [333580, 333571],
+        'status': false
+    },
+    {
+        'id': 3,
+        'name': 'Office',
+        'status': false,
+        'code': [341260, 341251]
+    }
+];
 
 
 init();
@@ -48,12 +76,7 @@ function init() {
     outlet.motion = new Date();
     outlet.motionOn = true;
 
-    outlet.lights = [
-        {'id': 0, 'name': 'Bedroom', 'status': false, 'code': [333116, 333107]},
-        {'id': 1, 'name': 'Living Room', 'status': false, 'code': [333260, 333251]},
-        {'id': 2, 'name': 'Fan', 'status': false, 'code': [333580, 333571]},
-        {'id': 3, 'name': 'Office', 'status': false, 'code': [341260, 341251]}
-    ];
+
 
     app.get(['/','/login'], function (req, res) {
         if(typeof req.cookies.jwt === "undefined")
