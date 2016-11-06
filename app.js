@@ -1,9 +1,16 @@
 var gpio = require('rpi-gpio');
+var sudo = require('sudo');
+var options = { cachePassword: true, prompt: 'Password:', spawnOptions: {} };
+var fs = require('fs');
+var md5 = require('md5');
+var jwt = require('jsonwebtoken');
 var express = require('express');
 var cookieParser = require('cookie-parser');
-var bodyParser     =        require("body-parser");
-
+var bodyParser = require("body-parser");
 var app = express();
+var server = require('http').Server(app);
+var io = require('socket.io')(server);
+var outlet = [];
 app.use(cookieParser());
 app.use(bodyParser());
 app.use(function(req, res, next) {
@@ -12,21 +19,7 @@ app.use(function(req, res, next) {
     next();
 });
 app.use(express.static('public'));
-var server = require('http').Server(app);
-var io = require('socket.io')(server);
-var sudo = require('sudo');
-var jwt = require('jsonwebtoken');
 
-var options = {
-    cachePassword: true,
-    prompt: 'Password, yo? ',
-    spawnOptions: {/* other options for spawn */}
-};
-var outlet = [];
-server.listen(80, function (e) {
-    console.log('Server started. Awaiting Input:');
-   setInterval(checkSensor, 60000);
-});
 
 init();
 
@@ -35,9 +28,8 @@ gpio.on('change', function (channel, value) {
         console.log('Motion detected.');
         outlet.motion = new Date();
         if (outlet.lights[1].status == false && value == true)
-            if(outlet.motionOn == true && (outlet.motion.getHours() > 15 || outlet.motion.getHours() < 3))
-            // Turn on light only if the light is off, the motion sensor was tripped, and it's past 5pm
-            sendCode(1);
+            if(outlet.motionOn == true && (outlet.motion.getHours() > 15 || outlet.motion.getHours() < 1))
+            sendCode(1, true);
 
     }
 });
@@ -45,45 +37,63 @@ gpio.on('change', function (channel, value) {
 io.on('connection', connection);
 
 function init() {
-
+    server.listen(80, function (e) {
+        console.log('Server started. Awaiting Input:');
+        setInterval(checkSensor, 60000);
+    });
     gpio.setMode(gpio.MODE_BCM);
     gpio.setup(19, gpio.DIR_IN, gpio.EDGE_BOTH);
+
+
     outlet.motion = new Date();
     outlet.motionOn = true;
 
     outlet.lights = [
         {'id': 0, 'name': 'Bedroom', 'status': false, 'code': [333116, 333107]},
         {'id': 1, 'name': 'Living Room', 'status': false, 'code': [333260, 333251]},
-        {'id': 2, 'name': 'Audio Mixer', 'status': false, 'code': [333580, 333571]},
+        {'id': 2, 'name': 'Fan', 'status': false, 'code': [333580, 333571]},
         {'id': 3, 'name': 'Office', 'status': false, 'code': [341260, 341251]}
     ];
 
-    app.get('/', function (req, res) {
-        res.sendFile(__dirname + '/login.html');
-    });
-    app.get('/login', function (req, res) {
-        res.sendFile(__dirname + '/login.html');
+    app.get(['/','/login'], function (req, res) {
+        if(typeof req.cookies.jwt === "undefined")
+            res.sendFile(__dirname + '/login.html');
+        else
+            res.redirect("/lights");
     });
     app.post('/login', function (req, res) {
-        console.log(req.body);
-        var user = { name: req.body.username, pass: req.body.password};
-        if(user.name == "tfitz237" && user.pass == "tfitz123") {
-            res.cookie('jwt', jwt.sign(user, 'supersecretcode'));
-
+        var valid = false;
+        var login = { name: req.body.username, pass: req.body.password};
+        var users = JSON.parse(fs.readFileSync('users.json', 'utf8')).users;
+        for(var i = 0; i < users.length; i++ ) {
+            if (login.name == users[i].name && md5(login.pass) == users[i].pass) {
+                valid = true;
+                res.cookie('jwt', jwt.sign(login, 'supersecretcode'));
+                res.redirect("/lights");
+            }
         }
-        res.redirect("/lights");
+        if (!valid)
+            res.redirect("/login");
     });
     app.get('/lights', function(req, res) {
         if(req.cookies.jwt != undefined && jwt.verify(req.cookies.jwt, 'supersecretcode', {ignoreExpiration: true})) {
             res.sendFile(__dirname + '/index.html');
+        } else {
+            res.redirect("/login");
         }
     });
     app.post('/lights/:on/:lightName', function(req,res) {
         if(jwt.verify(req.body.token, 'supersecretcode', {ignoreExpiration: true})) {
             var name = req.params.lightName.replace('the','').trim();
             var on = (req.params.on == "on");
-            findAndSend(name, on);
+            var valid = findAndSend(name, on);
+            if (valid)
+                res.sendStatus(200);
+            else
+                res.sendStatus(400);
 	    console.log("POST<'"+name+"'>", on);
+        } else {
+            res.sendStatus(403);
         }
     });
 
@@ -156,7 +166,7 @@ function checkSensor() {
             if (value == false && outlet.lights[1].status == true) {
                 if (new Date().getTime() - outlet.motion.getTime() > 300000) {
                     sendCode(1, false);
-                    console.log('No motion.');
+                    console.log('No motion. Lights out.');
                 } else {
                     console.log('Yes. Checking again in a minute.');
                 }
@@ -170,12 +180,16 @@ function findAndSend(name, on) {
         for(var i = 0; i < outlet.lights.length; i++) {
             sendCode(outlet.lights[i], on);
         }
+        return true;
     }
     for(var i = 0; i < outlet.lights.length; i++) {
         if(outlet.lights[i].name.toLowerCase() == name.toLowerCase()) {
             sendCode(i, on);
             console.log(outlet.lights[i]);
+            return true;
         }
     }
+
+    return false;
 
 }

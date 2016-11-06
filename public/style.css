@@ -2,6 +2,7 @@ body {
     background: #eee;
     margin: 0;
     font-size: 13px;
+    font-family: Arial;
     overflow-x: hidden;
 }
 .topbar {
@@ -9,18 +10,34 @@ body {
     height:35px;
     background-color: #DDD;
     border-bottom: 1px solid black;
-    margin-bottom: 5px;
+    margin-bottom: 10px;
 }
 .topbar h2 {
     padding-top: 10px;
     text-align:center;
-    font-family: Arial;
+
     margin-left: 10px;
 }
 .switchWrap {
     position:relative;
     left: 50%;
     margin-left: -87.5px;
+}
+.switchWrap form input {
+    position: relative;
+    display: block;
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 5px;
+    text-align: center;
+}
+.switchWrap form {
+    width: 175px;
+}
+.switchWrap form input[type=submit] {
+    width: 199px;
+
+
 }
 .onoffswitch {
     position: relative; width: 175px;
