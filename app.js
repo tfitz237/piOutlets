@@ -20,7 +20,6 @@ app.use(function(req, res, next) {
     next();
 });
 app.use(express.static('public'));
-
 var outlet = [];
 outlet.lights = [
     {
@@ -72,12 +71,8 @@ function init() {
     });
     gpio.setMode(gpio.MODE_BCM);
     gpio.setup(19, gpio.DIR_IN, gpio.EDGE_BOTH);
-
-
     outlet.motion = new Date();
     outlet.motionOn = true;
-
-
 
     app.get(['/','/login'], function (req, res) {
         if(typeof req.cookies.jwt === "undefined")
@@ -224,7 +219,5 @@ function findAndSend(name, on) {
             return true;
         }
     }
-
     return false;
-
 }
