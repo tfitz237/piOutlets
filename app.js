@@ -125,6 +125,7 @@ function init() {
         child.stdout.on('data', function (data) {
             res.sendStatus(200);
         });
+        console.log('pulled from git');
     });
 }
 

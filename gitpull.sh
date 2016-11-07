@@ -1,4 +1,4 @@
 #!/bin/sh
-cd /home/Sites/pi-rfoutlet
+cd ~/Sites/pi-rfoutlet
 git pull
 echo "JUST PULLED FROM GIT"
