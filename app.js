@@ -120,6 +120,11 @@ function init() {
         }
     });
 
+    app.post('/gitpush', function (req,res) {
+        var child = sudo(['/home/Sites/pi-rfoutlet/restart.sh', code.toString()], options);
+        child.stdout.on('data', function (data) {
+        });
+    });
 }
 
 function connection(socket) {
