@@ -121,8 +121,9 @@ function init() {
     });
 
     app.post('/gitpush', function (req,res) {
-        var child = sudo(['/home/Sites/pi-rfoutlet/restart.sh', code.toString()], options);
+        var child = sudo(['sh', '/home/Sites/pi-rfoutlet/gitpull.sh'], options);
         child.stdout.on('data', function (data) {
+            res.sendStatus(200);
         });
     });
 }
