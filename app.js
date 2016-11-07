@@ -122,13 +122,14 @@ function init() {
     });
 
     app.post('/gitpush', function (req,res) {
-        exec('sh /home/Sites/pi-rfoutlet/gitpull.sh', function(e,o,err) {
+        exec('sh /home/pi/Sites/pi-rfoutlet/gitpull.sh', function(e,o,err) {
             if(e)
-            res.sendStatus(400);
-            else
+            res.send(e);
+            else {
+                console.log(o);
                 res.sendStatus(200);
+            }
         });
-        console.log('pulled from git');
 
     });
 }
