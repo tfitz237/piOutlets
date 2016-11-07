@@ -123,7 +123,7 @@ function init() {
 
     app.post('/gitpush', function (req,res) {
         exec('sh /home/Sites/pi-rfoutlet/gitpull.sh', function(e,o,err) {
-            if(error)
+            if(e)
             res.sendStatus(400);
             else
                 res.sendStatus(200);
