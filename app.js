@@ -1,5 +1,6 @@
 var gpio = require('rpi-gpio');
 var sudo = require('sudo');
+var exec = require('child_process').exec;
 var options = { cachePassword: true, prompt: 'Password:', spawnOptions: {} };
 var fs = require('fs');
 var md5 = require('md5');
@@ -121,11 +122,14 @@ function init() {
     });
 
     app.post('/gitpush', function (req,res) {
-        var child = sudo(['sh', '/home/Sites/pi-rfoutlet/gitpull.sh'], options);
-        child.stdout.on('data', function (data) {
-            res.sendStatus(200);
+        exec('sh /home/Sites/pi-rfoutlet/gitpull.sh', function(e,o,err) {
+            if(error)
+            res.sendStatus(400);
+            else
+                res.sendStatus(200);
         });
         console.log('pulled from git');
+
     });
 }
 
