@@ -75,12 +75,15 @@ function init() {
     outlet.motion = new Date();
     outlet.motionOn = true;
 
-    app.get(['/','/login'], function (req, res) {
-        if(typeof req.cookies.jwt === "undefined")
-            res.sendFile(__dirname + '/login.html');
-        else
-            res.redirect("/lights");
+    app.get('/', function (req,res) {
+        res.sendFile(__dirname + "/index.html");
     });
+    // app.get(['/','/login'], function (req, res) {
+    //     if(typeof req.cookies.jwt === "undefined")
+    //         res.sendFile(__dirname + '/login.html');
+    //     else
+    //         res.redirect("/lights");
+    // });
     app.post('/loginext', function (req,res) {
         var valid = false;
         var login = { name: req.body.username, pass: req.body.password};
