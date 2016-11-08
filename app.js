@@ -79,7 +79,7 @@ function init() {
         res.sendFile(__dirname + "/index.html");
     });
 
-    app.post('/loginext', function (req,res) {
+    app.post('/login', function (req,res) {
         var valid = false;
         console.log(req.body);
         var login = { name: req.body.username, pass: req.body.password};

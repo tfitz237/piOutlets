@@ -72,7 +72,7 @@
             }
         }
         function login() {
-            $http.post("http://tomfitz.me:9999/loginext", {username: $scope.loginUsername, password: $scope.loginPassword})
+            $http.post("http://tomfitz.me:9999/login", {username: $scope.loginUsername, password: $scope.loginPassword})
                 .success(function(data) {
                     if(data.valid) {
                         setCookie("jwt", data.token);
@@ -84,20 +84,10 @@
                 });
         }
         function getCookie(name, callback) {
-            if(window.isExtension) {
-                chrome.cookies.get({"url": "http://tomfitz.me:9999", "name": name}, function(cookie) {
-                    callback(cookie.value);
-                });
-            } else {
-                callback($cookies.get(name));
-            }
+            callback($cookies.get(name));
         }
         function setCookie(key,value) {
-            if(window.isExtension) {
-                chrome.cookies.set({"name": key, "url": "http://tomfitz.me:9999", "value": value});
-            } else {
-                $cookies.put(key,value);
-            }
+            $cookies.put(key,value);
         }
     }
 
