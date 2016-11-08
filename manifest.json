@@ -10,7 +10,16 @@
     "default_popup": "public/index.html"
   },
   "permissions": [
-    "activeTab",
-    "https://ajax.googleapis.com/"
-  ]
+    "cookies",
+    "activeTab"
+  ],
+  "background": {
+    "scripts": [
+      "public/ext.js",
+      "public/angular.min.js",
+      "public/angular.cookies.min.js",
+      "public/socketio.js",
+      "public/app.js"
+    ]
+  }
 }

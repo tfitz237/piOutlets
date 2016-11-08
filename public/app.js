@@ -1,6 +1,6 @@
 (function () {
     "use strict";
-
+    var socket;
     angular.module('app', ['ngCookies']).controller('AppCtrl', AppCtrl);
 
     AppCtrl.$inject = ['$scope', '$http', '$cookies'];
@@ -9,23 +9,29 @@
     function AppCtrl ($scope, $http, $cookies) {
         $scope.loggedIn = false;
         $scope.loginFn = login;
-        if($cookies.get('jwt') != null) {
-            connect();
-        }
+        getCookie('jwt', function(value) {
+                if(value !=null)
+                    connect(value);
+        });
 
-        function connect() {
-            var socket = io.connect('http://tomfitz.me:9999');
-            socket.emit('authenticated', {token: $cookies.get('jwt')});
-            socket.on('authenicated', connection);
-            socket.on('unauthorized', function(msg) {
-                $scope.loggedIn = false;
+        function connect(value) {
+            console.log("trying to connect...");
+            socket = io.connect('http://tomfitz.me:9999');
+            socket.on('connect', function() {
+                console.log('with token', value);
+                socket.emit('authenticate', {token: value});
+                socket.on('authenticated', connection);
+                socket.on('unauthorized', function (msg) {
+                    $scope.loggedIn = false;
+                });
             });
+
         }
 
 
         function connection() {
-
-            $scope.loggedIn = false;
+            console.log("connected");
+            $scope.loggedIn = true;
             if (localStorage["jwt"] != null) {
 
             }
@@ -66,22 +72,35 @@
             }
         }
         function login() {
-            console.log("logginedin");
             $http.post("http://tomfitz.me:9999/loginext", {username: $scope.loginUsername, password: $scope.loginPassword})
                 .success(function(data) {
-                    console.log(data);
                     if(data.valid) {
-                        $cookies.put('jwt', data.token);
-
-                        connect();
+                        setCookie("jwt", data.token);
+                        connect(data.token);
                     }
                     else
                         $scope.loggedIn = false;
 
                 });
         }
-
+        function getCookie(name, callback) {
+            if(window.isExtension) {
+                chrome.cookies.get({"url": "http://tomfitz.me:9999", "name": name}, function(cookie) {
+                    callback(cookie.value);
+                });
+            } else {
+                callback($cookies.get(name));
+            }
+        }
+        function setCookie(key,value) {
+            if(window.isExtension) {
+                chrome.cookies.set({"name": key, "url": "http://tomfitz.me:9999", "value": value});
+            } else {
+                $cookies.put(key,value);
+            }
+        }
     }
+
 
 
 })();

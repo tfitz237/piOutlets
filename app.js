@@ -76,14 +76,9 @@ function init() {
     outlet.motionOn = true;
 
     app.get('/', function (req,res) {
-        res.sendFile(__dirname + "/public/index.html");
+        res.sendFile(__dirname + "/index.html");
     });
-    // app.get(['/','/login'], function (req, res) {
-    //     if(typeof req.cookies.jwt === "undefined")
-    //         res.sendFile(__dirname + '/login.html');
-    //     else
-    //         res.redirect("/lights");
-    // });
+
     app.post('/loginext', function (req,res) {
         var valid = false;
         console.log(req.body);
@@ -99,27 +94,7 @@ function init() {
         if (!valid)
             res.send({valid: false});
     });
-    app.post('/login', function (req, res) {
-        var valid = false;
-        var login = { name: req.body.username, pass: req.body.password};
-        var users = JSON.parse(fs.readFileSync('users.json', 'utf8')).users;
-        for(var i = 0; i < users.length; i++ ) {
-            if (login.name == users[i].name && md5(login.pass) == users[i].pass) {
-                valid = true;
-                res.cookie('jwt', jwt.sign(login, 'supersecretcode'));
-                res.redirect("/lights");
-            }
-        }
-        if (!valid)
-            res.redirect("/login");
-    });
-    app.get('/lights', function(req, res) {
-        if(req.cookies.jwt != undefined && jwt.verify(req.cookies.jwt, 'supersecretcode', {ignoreExpiration: true})) {
-            res.sendFile(__dirname + '/public/index.html');
-        } else {
-            res.redirect("/login");
-        }
-    });
+
     app.post('/lights/:on/:lightName', function(req,res) {
         if(jwt.verify(req.body.token, 'supersecretcode', {ignoreExpiration: true})) {
             var name = req.params.lightName.replace('the','').trim();

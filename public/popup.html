@@ -1,0 +1,33 @@
+
+<html ng-app="app">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="style.css" />
+    <title>piOutlets</title>
+</head>
+<body ng-controller="AppCtrl">
+<div class="topbar"><H2>piOutlets</H2></div>
+
+<div class="switchWrap">
+    <form ng-hide="loggedIn" ng-submit="loginFn()">
+        <input type="text" name="username" placeholder="Username" ng-model="loginUsername"/>
+        <input type="password" name="password" placeholder="Password" ng-model="loginPassword"/>
+        <input type="submit" value="Login"  />
+    </form>
+    <div class="outlets" ng-show="loggedIn">
+        <div class="onoffswitch" ng-repeat="light in lights">
+            <input type="checkbox" ng-model="light.status" class="onoffswitch-checkbox" id="{{light.id}}" ng-change="lightToggle(light.id)">
+            <label ng-bind="light.name" class="onoffswitch-label" for="{{light.id}}"></label>
+        </div>
+
+        <hr>
+        <div class="onoffswitch">
+            <input type="checkbox" ng-model="motionOn" class="onoffswitch-checkbox" id="motionOn" ng-change="motionToggle()">
+            <label class="onoffswitch-label" for="motionOn">Motion Sensor</label>
+        </div>
+    </div>
+
+</div>
+
+
+</body> </html>
