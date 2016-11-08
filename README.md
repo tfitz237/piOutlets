@@ -16,22 +16,33 @@ Clone the repository and CD into the directory with your favorite terminal then
 to install the rest of the node modules
 
 #### Configuration
+A variable called outlet.config holds configuration numbers:
+```javascript 
+outlet.config = {
+    port: 80,  // Sets the port of the webserver (80 requires sudo)
+    
+    motionOnTime:  15,    // Hour in military time where the motion sensor turns on
+    motionOffTime: 1,     // Hour in military time where the motion sensor turns off 
+    motionLength: 5,      // Minutes of waiting for motion
+    motionLightId: 1      // ID of light to turn on/off due to motion
+
+};
+```
 Inside of the root's app.js, there is a variable called outlet.lights that has a list of all of the lights created by default.
 The format is: 
 ```javascript
     {
-        'id': 0,
-        'name': 'Bedroom',
-        'code': [333116, 333107],
-        'status': false
+        'id': 0,                    // increasing and unique
+        'name': 'Bedroom',          // Unique name for outlet
+        'code': [333116, 333107],   // RF code [OFF, ON]
+        'status': false             // current status of outlet (default to false and let the app do the rest)
     }
 ```
-* ID: increasing and unique
-* name: Unique name for the outlet
+
 * code [OFF, ON]
   * These are the codes that you can get from your RF receiver. The Off code is first, the On code is second. 
   * code[0] = off code[1] = on
-* status: current status of outlet (default to false and let the app do the rest)
+  
 You can create as many light objects as you like, just make sure the properties above are all set. 
 
 
