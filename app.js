@@ -21,6 +21,18 @@ app.use(function(req, res, next) {
 });
 app.use(express.static('public'));
 var outlet = [];
+
+outlet.config = {
+    port: 80,
+    
+    motionOnTime:  15,
+    motionOffTime: 1,
+    motionLength: 5,
+    motionLightId: 1
+
+};
+
+
 outlet.lights = [
     {
         'id': 0,
@@ -49,6 +61,7 @@ outlet.lights = [
 ];
 
 
+
 init();
 
 gpio.on('change', function (channel, value) {
@@ -56,9 +69,8 @@ gpio.on('change', function (channel, value) {
         console.log('Motion detected.');
         outlet.motion = new Date();
         if (outlet.lights[1].status == false && value == true)
-            if(outlet.motionOn == true && (outlet.motion.getHours() > 15 || outlet.motion.getHours() < 1))
-            sendCode(1, true);
-
+            if(outlet.motionOn == true && (outlet.motion.getHours() > outlet.config.motionOnTime || outlet.motion.getHours() < outlet.config.motionOffTime))
+            sendCode(outlet.config.motionLightId, true);
     }
 });
 
@@ -66,7 +78,7 @@ io.on('connection', socketioJwt.authorize({secret: 'supersecretcode', timeout: 1
 io.on('authenticated', connection);
 
 function init() {
-    server.listen(80, function (e) {
+    server.listen(outlet.config.port, function (e) {
         console.log('Server started.');
         setInterval(checkSensor, 60000);
     });
@@ -188,8 +200,8 @@ function checkSensor() {
         console.log('Any motion in the past 5 minutes?');
         gpio.read(19, function (err, value) {
             if (value == false && outlet.lights[1].status == true) {
-                if (new Date().getTime() - outlet.motion.getTime() > 300000) {
-                    sendCode(1, false);
+                if (new Date().getTime() - outlet.motion.getTime() > outlet.config.motionLength * 60000) {
+                    sendCode(outlet.config.motionLightId, false);
                     console.log('No motion. Lights out.');
                 } else {
                     console.log('Yes. Checking again in a minute.');
