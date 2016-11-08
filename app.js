@@ -76,7 +76,7 @@ function init() {
     outlet.motionOn = true;
 
     app.get('/', function (req,res) {
-        res.sendFile(__dirname + "/index.html");
+        res.sendFile(__dirname + "/public/index.html");
     });
     // app.get(['/','/login'], function (req, res) {
     //     if(typeof req.cookies.jwt === "undefined")
@@ -115,7 +115,7 @@ function init() {
     });
     app.get('/lights', function(req, res) {
         if(req.cookies.jwt != undefined && jwt.verify(req.cookies.jwt, 'supersecretcode', {ignoreExpiration: true})) {
-            res.sendFile(__dirname + '/index.html');
+            res.sendFile(__dirname + '/public/index.html');
         } else {
             res.redirect("/login");
         }

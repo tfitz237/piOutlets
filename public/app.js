@@ -63,7 +63,7 @@
         }
         function login() {
             console.log("logginedin");
-            $http.post("http://tomfitz.me:9999/loginext", {username: $scope.loginUsername, passwoord: $scope.loginPassword})
+            $http.post("http://tomfitz.me:9999/loginext", {username: $scope.loginUsername, password: $scope.loginPassword})
                 .success(function(data) {
                     console.log(data);
                     if(data.valid) {
