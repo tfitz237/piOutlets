@@ -34,12 +34,7 @@ body {
     text-align: center;
 }
 .switchWrap form {
-    width: 175px;
-}
-.switchWrap form input[type=submit] {
-    width: 199px;
-
-
+    width: 200px;
 }
 
 #loginForm {

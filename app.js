@@ -67,7 +67,7 @@ io.on('authenticated', connection);
 
 function init() {
     server.listen(80, function (e) {
-        console.log('Server started. Awaiting Input:');
+        console.log('Server started.');
         setInterval(checkSensor, 60000);
     });
     gpio.setMode(gpio.MODE_BCM);
@@ -201,16 +201,17 @@ function checkSensor() {
 
 function findAndSend(name, on) {
     if(name == 'all') {
-        for(var i = 0; i < outlet.lights.length; i++) {
+        for (var i = 0; i < outlet.lights.length; i++) {
             sendCode(outlet.lights[i], on);
         }
         return true;
-    }
-    for(var i = 0; i < outlet.lights.length; i++) {
-        if(outlet.lights[i].name.toLowerCase() == name.toLowerCase()) {
-            sendCode(i, on);
-            console.log(outlet.lights[i]);
-            return true;
+    } else {
+        for (var i = 0; i < outlet.lights.length; i++) {
+            if (outlet.lights[i].name.toLowerCase() == name.toLowerCase()) {
+                sendCode(i, on);
+                console.log(outlet.lights[i]);
+                return true;
+            }
         }
     }
     return false;
