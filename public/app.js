@@ -10,6 +10,10 @@
         $scope.loggedIn = false;
         $scope.loginFn = login;
         if($cookies.get('jwt') != null) {
+            connect();
+        }
+
+        function connect() {
             var socket = io.connect('http://tomfitz.me:9999');
             socket.emit('authenticated', {token: $cookies.get('jwt')});
             socket.on('authenicated', connection);
@@ -19,8 +23,8 @@
         }
 
 
-
         function connection() {
+
             $scope.loggedIn = false;
             if (localStorage["jwt"] != null) {
 
@@ -68,10 +72,8 @@
                     console.log(data);
                     if(data.valid) {
                         $cookies.put('jwt', data.token);
-                        $scope.loggedIn = true;
-                        var socket = io.connect('http://tomfitz.me:9999');
-                        socket.emit('authenticated', {token: $cookies.get('jwt')});
-                        socket.on('authenicated', connection);
+
+                        connect();
                     }
                     else
                         $scope.loggedIn = false;
