@@ -86,6 +86,7 @@ function init() {
     // });
     app.post('/loginext', function (req,res) {
         var valid = false;
+        console.log(req.body);
         var login = { name: req.body.username, pass: req.body.password};
         var users = JSON.parse(fs.readFileSync('users.json', 'utf8')).users;
         for(var i = 0; i < users.length; i++ ) {

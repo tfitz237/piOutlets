@@ -4,6 +4,8 @@ body {
     font-size: 13px;
     font-family: Arial;
     overflow-x: hidden;
+    min-width: 250px;
+    min-height: 250px;
 }
 .topbar {
     width:100%;

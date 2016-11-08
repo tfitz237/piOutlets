@@ -1,23 +1,25 @@
 (function () {
     "use strict";
 
-    angular.module('app', []).controller('AppCtrl', AppCtrl);
+    angular.module('app', ['ngCookies']).controller('AppCtrl', AppCtrl);
 
     AppCtrl.$inject = ['$scope', '$http', '$cookies'];
 
 
     function AppCtrl ($scope, $http, $cookies) {
         $scope.loggedIn = false;
-        if(readCookie('jwt') != null) {
+        $scope.loginFn = login;
+        if($cookies.get('jwt') != null) {
             var socket = io.connect('http://tomfitz.me:9999');
             socket.emit('authenticated', {token: $cookies.get('jwt')});
+            socket.on('authenicated', connection);
+            socket.on('unauthorized', function(msg) {
+                $scope.loggedIn = false;
+            });
         }
-        $scope.loginFn = login;
 
-        socket.on('authenicated', connection);
-        socket.on('unauthorized', function(msg) {
-            $scope.loggedIn = false;
-        });
+
+
         function connection() {
             $scope.loggedIn = false;
             if (localStorage["jwt"] != null) {
@@ -60,6 +62,7 @@
             }
         }
         function login() {
+            console.log("logginedin");
             $http.post("http://tomfitz.me:9999/loginext", {username: $scope.loginUsername, passwoord: $scope.loginPassword})
                 .success(function(data) {
                     console.log(data);

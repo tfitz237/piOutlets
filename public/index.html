@@ -9,10 +9,10 @@
         <div class="topbar"><H2>piOutlets</H2></div>
 
         <div class="switchWrap">
-            <form action="/login" method="POST" ng-hide="loggedIn">
+            <form ng-hide="loggedIn" ng-submit="loginFn()">
                 <input type="text" name="username" placeholder="Username" ng-model="loginUsername"/>
                 <input type="password" name="password" placeholder="Password" ng-model="loginPassword"/>
-                <input type="submit" value="Login" />
+                <input type="submit" value="Login"  />
             </form>
             <div class="outlets" ng-show="loggedIn">
                 <div class="onoffswitch" ng-repeat="light in lights">
@@ -32,5 +32,6 @@
 
             <script src="socketio.js"></script>
             <script src="angular.min.js"></script>
+            <script src="angular.cookies.min.js"></script>
             <script src="app.js"></script>
     </body> </html>
