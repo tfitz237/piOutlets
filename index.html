@@ -7,17 +7,26 @@
     </head>
     <body ng-controller="AppCtrl">
         <div class="topbar"><H2>piOutlets</H2></div>
+
         <div class="switchWrap">
-            <div class="onoffswitch" ng-repeat="light in lights">
-        	    <input type="checkbox" ng-model="light.status" class="onoffswitch-checkbox" id="{{light.id}}" ng-change="lightToggle(light.id)">
-        	    <label ng-bind="light.name" class="onoffswitch-label" for="{{light.id}}"></label>
+            <form action="/login" method="POST" ng-hide="loggedIn">
+                <input type="text" name="username" placeholder="Username" ng-model="loginUsername"/>
+                <input type="password" name="password" placeholder="Password" ng-model="loginPassword"/>
+                <input type="submit" value="Login" />
+            </form>
+            <div class="outlets" ng-show="loggedIn">
+                <div class="onoffswitch" ng-repeat="light in lights">
+                    <input type="checkbox" ng-model="light.status" class="onoffswitch-checkbox" id="{{light.id}}" ng-change="lightToggle(light.id)">
+                    <label ng-bind="light.name" class="onoffswitch-label" for="{{light.id}}"></label>
+                </div>
+
+                <hr>
+                <div class="onoffswitch">
+                    <input type="checkbox" ng-model="motionOn" class="onoffswitch-checkbox" id="motionOn" ng-change="motionToggle()">
+                    <label class="onoffswitch-label" for="motionOn">Motion Sensor</label>
+                </div>
             </div>
 
-	        <hr>
-            <div class="onoffswitch">
-                <input type="checkbox" ng-model="motionOn" class="onoffswitch-checkbox" id="motionOn" ng-change="motionToggle()">
-                <label class="onoffswitch-label" for="motionOn">Motion Sensor</label>
-            </div>
         </div>
 
 

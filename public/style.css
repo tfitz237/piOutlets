@@ -39,6 +39,10 @@ body {
 
 
 }
+
+#loginForm {
+    display:none;
+}
 .onoffswitch {
     position: relative; width: 175px;
     -webkit-user-select:none; -moz-user-select:none; -ms-user-select: none;

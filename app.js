@@ -11,7 +11,7 @@ var bodyParser = require("body-parser");
 var app = express();
 var server = require('http').Server(app);
 var io = require('socket.io')(server);
-
+var socketioJwt = require('socketio-jwt');
 app.use(cookieParser());
 app.use(bodyParser());
 app.use(function(req, res, next) {
@@ -62,7 +62,8 @@ gpio.on('change', function (channel, value) {
     }
 });
 
-io.on('connection', connection);
+io.on('connection', socketioJwt.authorize({secret: 'supersecretcode', timeout: 15000}));
+io.on('authenticated', connection);
 
 function init() {
     server.listen(80, function (e) {
@@ -79,6 +80,20 @@ function init() {
             res.sendFile(__dirname + '/login.html');
         else
             res.redirect("/lights");
+    });
+    app.post('/loginext', function (req,res) {
+        var valid = false;
+        var login = { name: req.body.username, pass: req.body.password};
+        var users = JSON.parse(fs.readFileSync('users.json', 'utf8')).users;
+        for(var i = 0; i < users.length; i++ ) {
+            if (login.name == users[i].name && md5(login.pass) == users[i].pass) {
+                valid = true;
+                res.send({valid: true, token: jwt.sign(login, 'supersecretcode')});
+                break;
+            }
+        }
+        if (!valid)
+            res.send({valid: false});
     });
     app.post('/login', function (req, res) {
         var valid = false;
