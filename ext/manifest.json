@@ -10,8 +10,11 @@
     "default_popup": "popup.html"
   },
   "permissions": [
-    "cookies",
+    "storage",
     "activeTab"
-  ]
+  ],
+  "background": {
+    "scripts": ["socketio.js", "background.js"]
+  }
 
 }
