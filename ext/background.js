@@ -31,7 +31,11 @@ function connect(token) {
     });
 }
 
-chrome.extension.onConnect.addListener(function(prt){
+
+chrome.runtime.onConnect.addListener(function(prt){
+    prt.onDisconnect.addListener(function() {
+        port = undefined;
+    });
     port = prt;
     if(auth)
         send('connected');

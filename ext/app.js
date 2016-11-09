@@ -7,7 +7,7 @@
 
 
     function AppCtrl ($scope, $http, $cookies) {
-        var port = chrome.extension.connect({name: "extConnection"});
+        var port = chrome.runtime.connect({name: "extConnection"});
         init();
         port.onMessage.addListener(function(msg){
             console.log(msg.event + ">> " +msg.value);
