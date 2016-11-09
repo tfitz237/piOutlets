@@ -58,7 +58,7 @@ In order to run this at port 80 you will have to run it as admistrator (sudo). Y
 * POSTable API that allows you to turn on/off specific lights via name.
   * ``` POST to http://localhost/lights/on/bedroom ``` to turn on the bedroom lights
   * requires the JWT token generated from your login to be POSTed (must copy from cookies)
-* Unpacked Google Extension (inside public folder)
+* Unpacked Google Extension (inside `ext` folder)
   * Load the unpacked extension and change the URL of the ```io.connect()```  to the IP/URL of your server
   * Keep your outlet controls with you at any time on any page.
   
