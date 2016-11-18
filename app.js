@@ -24,7 +24,7 @@ var outlet = [];
 
 outlet.config = {
     port: 80,
-    
+
     motionOnTime:  15,
     motionOffTime: 1,
     motionLength: 5,
@@ -217,6 +217,11 @@ function findAndSend(name, on) {
             sendCode(outlet.lights[i], on);
         }
         return true;
+    } else if (name == 'motion') {
+        outlet.motionOn = on;
+        console.log('Motion sensor set to ' + outlet.motionOn);
+        io.emit('motion set', outlet.motionOn);    
+
     } else {
         for (var i = 0; i < outlet.lights.length; i++) {
             if (outlet.lights[i].name.toLowerCase() == name.toLowerCase()) {
