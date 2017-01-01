@@ -183,11 +183,12 @@ function sendCode(light, on) {
             console.log('Turning the ' + outlet.lights[light].name + ' off');
         }
     }
-    var child = sudo(['/var/www/rfoutlet/codesend', code.toString()], options);
+    var codesend = '/home/pi/projects/piOutlets/codesend';	
+    var child = sudo([codesend, code.toString()], options);
     child.stdout.on('data', function (data) {
-        var child2 = sudo(['/var/www/rfoutlet/codesend', code.toString()], options);
+        var child2 = sudo([codesend, code.toString()], options);
         child2.stdout.on('data', function (data) {
-            var child3 = sudo(['/var/www/rfoutlet/codesend', code.toString()], options);
+            var child3 = sudo([codesend, code.toString()], options);
             child3.stdout.on('data', function (data) {
                 io.emit('light status', outlet.lights);
             });
