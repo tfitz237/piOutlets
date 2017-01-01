@@ -1,5 +1,6 @@
 var gpio = require('rpi-gpio');
 var sudo = require('sudo');
+var googlehome = require('google-home-notifier');
 var exec = require('child_process').exec;
 var options = { cachePassword: true, prompt: 'Password:', spawnOptions: {} };
 var fs = require('fs');
@@ -82,6 +83,7 @@ function init() {
         console.log('Server started.');
         setInterval(checkSensor, 60000);
     });
+    googlehome.device('Google Home');
     gpio.setMode(gpio.MODE_BCM);
     gpio.setup(19, gpio.DIR_IN, gpio.EDGE_BOTH);
     outlet.motion = new Date();
@@ -149,11 +151,13 @@ function connection(socket) {
     socket.on('light status', function (n) {
         io.emit('light status', outlet.lights);
         io.emit('motion set', outlet.motionOn);
+        
     });
 
     socket.on('light change', function (n) {
         sendCode(n);
         io.emit('light status', outlet.lights);
+         googlehome.notify(outlet.lights[n].name + "light " + (n ? "on" : "off"), function(e) { console.log(e) });
     });
 
     socket.on('disconnect', function () {
