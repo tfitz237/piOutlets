@@ -1,6 +1,5 @@
 var gpio = require('rpi-gpio');
 var sudo = require('sudo');
-var googlehome = require('google-home-notifier');
 var exec = require('child_process').exec;
 var options = { cachePassword: true, prompt: 'Password:', spawnOptions: {} };
 var fs = require('fs');
@@ -157,7 +156,6 @@ function connection(socket) {
     socket.on('light change', function (n) {
         sendCode(n);
         io.emit('light status', outlet.lights);
-         googlehome.notify(outlet.lights[n].name + "light " + (n ? "on" : "off"), function(e) { console.log(e) });
     });
 
     socket.on('disconnect', function () {
